@@ -1,4 +1,4 @@
-package org.litespring.beans.factory.support;
+package org.litespring.beans.factory;
 
 import org.litespring.beans.BeansException;
 
