@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 public class ResourceTest {
     @Test
-    public void testClassPathResource(){
+    public void testClassPathResource() {
         Resource resource = new ClassPathResource("petstore-v1.xml");
         try {
             InputStream inputStream = resource.getInputStream();
@@ -23,7 +23,7 @@ public class ResourceTest {
     }
 
     @Test
-    public void testFileSystemResource(){
+    public void testFileSystemResource() {
         Resource resource = new FileSystemResource("D:\\MyWorkspace\\LiteSpring\\src\\main\\resources\\petstore-v1.xml");
         try {
             InputStream inputStream = resource.getInputStream();

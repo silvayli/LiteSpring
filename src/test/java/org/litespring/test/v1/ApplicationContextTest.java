@@ -8,7 +8,7 @@ import org.litespring.service.v1.PetStoreService;
 
 public class ApplicationContextTest {
     @Test
-    public void testGetBean(){
+    public void testGetBean() {
         ApplicationContext context = new ClassPathXMLApplicationContext("petstore-v1.xml");
         PetStoreService service = (PetStoreService) context.getBean("petStore");
         Assert.assertNotNull(service);

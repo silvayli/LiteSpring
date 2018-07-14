@@ -8,13 +8,13 @@ import org.litespring.util.ClassUtils;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultBeanFactory implements BeanFactory,BeanDefinitionRegistry {
+public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
 
-    private final Map<String,BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>();
+    private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>();
 
     public Object getBean(String beanID) {
         BeanDefinition beanDefinition = this.getBeanDefinition(beanID);
-        if(beanDefinition == null){
+        if (beanDefinition == null) {
             throw new BeanCreationException("Bean Definition does not exist");
         }
         String beanClassName = beanDefinition.getBeanClassName();
@@ -24,7 +24,7 @@ public class DefaultBeanFactory implements BeanFactory,BeanDefinitionRegistry {
             Class<?> clz = classLoader.loadClass(beanClassName);
             return clz.newInstance();
         } catch (Exception e) {
-            throw new BeanCreationException("Create Bean for " + beanClassName + " failed",e);
+            throw new BeanCreationException("Create Bean for " + beanClassName + " failed", e);
         }
     }
 

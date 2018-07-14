@@ -1,36 +1,33 @@
 package org.litespring.beans.factory.xml;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.litespring.beans.BeanDefinition;
 import org.litespring.beans.factory.BeanDefinitionStoreException;
 import org.litespring.beans.factory.support.BeanDefinitionRegistry;
 import org.litespring.beans.factory.support.GenericBeanDefinition;
-import org.litespring.util.ClassUtils;
+import org.litespring.core.io.Resource;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
 public class XmlBeanDefinitionReader {
 
+    public static final String ID_ATTRIBUTE = "id";
+    public static final String CLASS_ATTRIBUTE = "class";
+    private BeanDefinitionRegistry registry;
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         this.registry = registry;
     }
 
-    private BeanDefinitionRegistry registry;
+    public void loadBeanDefinitions(Resource resource) {
 
-    public static final String ID_ATTRIBUTE = "id";
-    public static final String CLASS_ATTRIBUTE = "class";
-
-
-    public void loadBeanDefinitions(String configFile) {
-        InputStream inputStream = null;
-        ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
-        inputStream = classLoader.getResourceAsStream(configFile);
         SAXReader reader = new SAXReader();
+        InputStream inputStream = null;
         try {
+            inputStream = resource.getInputStream();
             Document document = reader.read(inputStream);
             Element rootElement = document.getRootElement();
             Iterator<Element> iterator = rootElement.elementIterator();
@@ -41,8 +38,16 @@ public class XmlBeanDefinitionReader {
                 BeanDefinition beanDefinition = new GenericBeanDefinition(id, beanClassName);
                 this.registry.registerBeanDefinition(id, beanDefinition);
             }
-        } catch (DocumentException e) {
+        } catch (Exception e) {
             throw new BeanDefinitionStoreException("IO Exception, Invalid XML", e);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
