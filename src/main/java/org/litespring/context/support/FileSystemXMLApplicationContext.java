@@ -9,7 +9,7 @@ public class FileSystemXMLApplicationContext extends AbstractApplicationContext 
         super(path);
     }
 
-    protected Resource getResource(String path) {
+    protected Resource getResourceByPath(String path) {
         return new FileSystemResource(path);
     }
 
