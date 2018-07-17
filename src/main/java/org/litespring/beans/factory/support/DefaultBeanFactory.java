@@ -9,25 +9,38 @@ import org.litespring.util.ClassUtils;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultBeanFactory implements ConfigurableBeanFactory, BeanDefinitionRegistry {
+public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory, BeanDefinitionRegistry {
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>();
     private ClassLoader beanClassLoader;
 
     public Object getBean(String beanID) {
-        BeanDefinition beanDefinition = this.getBeanDefinition(beanID);
-        if (beanDefinition == null) {
-            throw new BeanCreationException("Bean Definition does not exist");
+        BeanDefinition bd = this.getBeanDefinition(beanID);
+        if (bd == null) {
+            return null;
         }
-        String beanClassName = beanDefinition.getBeanClassName();
-        ClassLoader classLoader = this.getBeanClassLoader();
 
+        if (bd.isSingleton()) {
+            Object bean = this.getSingleton(beanID);
+            if (bean == null) {
+                bean = createBean(bd);
+                this.registerSingleton(beanID, bean);
+            }
+            return bean;
+        }
+        return createBean(bd);
+    }
+
+    private Object createBean(BeanDefinition bd) {
+        ClassLoader cl = this.getBeanClassLoader();
+        String beanClassName = bd.getBeanClassName();
         try {
-            Class<?> clz = classLoader.loadClass(beanClassName);
+            Class<?> clz = cl.loadClass(beanClassName);
             return clz.newInstance();
         } catch (Exception e) {
-            throw new BeanCreationException("Create Bean for " + beanClassName + " failed", e);
+            throw new BeanCreationException("create bean for " + beanClassName + " failed", e);
         }
+
     }
 
     public BeanDefinition getBeanDefinition(String beanID) {
@@ -43,7 +56,7 @@ public class DefaultBeanFactory implements ConfigurableBeanFactory, BeanDefiniti
     }
 
     public ClassLoader getBeanClassLoader() {
-        if(this.beanClassLoader == null){
+        if (this.beanClassLoader == null) {
             return ClassUtils.getDefaultClassLoader();
         }
         return beanClassLoader;

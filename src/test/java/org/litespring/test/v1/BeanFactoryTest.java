@@ -11,8 +11,8 @@ import org.litespring.beans.factory.xml.XmlBeanDefinitionReader;
 import org.litespring.core.io.ClassPathResource;
 import org.litespring.service.v1.PetStoreService;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
+
 
 public class BeanFactoryTest {
 
@@ -28,10 +28,14 @@ public class BeanFactoryTest {
     @Test
     public void testGetBean() {
         reader.loadBeanDefinitions(new ClassPathResource("petstore-v1.xml"));
-        BeanDefinition beanDefinition = factory.getBeanDefinition("petStore");
-        assertEquals("org.litespring.service.v1.PetStoreService", beanDefinition.getBeanClassName());
+        BeanDefinition bd = factory.getBeanDefinition("petStore");
+        assertTrue(bd.isSingleton());
+        assertFalse(bd.isPrototype());
+        assertEquals("org.litespring.service.v1.PetStoreService", bd.getBeanClassName());
         PetStoreService petStore = (PetStoreService) factory.getBean("petStore");
         assertNotNull(petStore);
+        PetStoreService petStore1 = (PetStoreService) factory.getBean("petStore");
+        assertTrue(petStore.equals(petStore1));
     }
 
 
